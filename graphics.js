@@ -1,7 +1,7 @@
 import * as THREE from 'https://unpkg.com/three@0.119.0/build/three.module.js';
 import {
     OrbitControls
-} from '../lib/OrbitControls.js';
+} from './lib/OrbitControls.js';
 
 const windowWidth = window.innerWidth,
     windowHeight = window.innerHeight,
@@ -59,7 +59,7 @@ function convertUtmToImage(x, y) {
 }
 
 // load data
-d3.csv('../data/zipWithLatLon_property_sales.csv')
+d3.csv('./data/zipWithLatLon_property_sales.csv')
     .then(data => {
         data = data.filter(d => +d.mean_sale < 4000000)
         data.forEach(d => {
@@ -90,7 +90,7 @@ d3.csv('../data/zipWithLatLon_property_sales.csv')
 function addNYC() {
     const nycPlane = new THREE.PlaneGeometry(sceneWidth, sceneHeight, 1)
 
-    const nycTexture = new THREE.TextureLoader().load('../earth-img/nyc-names-1080hd.jpg');
+    const nycTexture = new THREE.TextureLoader().load('./earth-img/nyc-names-1080hd.jpg');
     const nycMaterial = new THREE.MeshPhongMaterial({
         map: nycTexture,
         shininess: 0.2,
