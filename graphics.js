@@ -14,7 +14,7 @@ const windowWidth = window.innerWidth,
     posY = 0,
     posZ = 800;
 
-const squareSize = 450,
+const squareSize = 500,
     xSquares = boundsWidth / squareSize,
     ySquares = boundsHeight / squareSize,
     boxSize = sceneWidth / xSquares,
@@ -24,10 +24,12 @@ let nyc, light, group;
 
 const barHeightScale = d3.scaleLinear().range([1, 200]),
     colorScale = d3.scaleLinear()
-    .range(['#FFFFFF', '#E4FF1A']); //'#DB2763'
+    .range(['#FFFFFF', '#E4FF1A', '#F19A3E']); //'#DB2763'
 
 // initialize a renderer
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({
+    antialias: true
+});
 renderer.setSize(windowWidth, windowHeight);
 
 // add it to the target element
@@ -67,24 +69,25 @@ d3.csv('./data/zipWithLatLon_property_sales.csv')
             d.latx = d.lng;
             d.utmy = d.coordsy;
             d.utmx = d.coordsx;
-            d.meanSale = +d.mean_sale;
+            d.medianSale = +d.median_sale;
             d.sceneX = convertUtmToImage(d.utmx, d.utmy)[0]
             d.sceneY = convertUtmToImage(d.utmx, d.utmy)[1]
         })
         const minSaleForScale = 100000;
-        barHeightScale.domain([minSaleForScale, d3.max(data, d => d.meanSale)])
-        colorScale.domain([minSaleForScale / 100,
-            // d3.median(data, d => d.meanSale),
-            d3.max(data, d => d.meanSale)
+        barHeightScale.domain([minSaleForScale, d3.max(data, d => d.medianSale)])
+        colorScale.domain([
+            d3.quantile(data.map(d => d.medianSale), 0.1),
+            d3.quantile(data.map(d => d.medianSale), 0.35),
+            d3.quantile(data.map(d => d.medianSale), 0.95)
         ])
 
         addNYC();
         addLights();
-        addCubes(data)
+        addCubes(data);
         render()
         init()
         // requestAnimationFrame(render);
-        
+
     })
 
 function addNYC() {
@@ -101,7 +104,7 @@ function addNYC() {
 }
 
 function addLights() {
-    light = new THREE.DirectionalLight(0x3333ee, 3.5, 500);
+    light = new THREE.DirectionalLight(0x8888ef, 1.5, 500);
     light.position.set(posX, posY, posZ)
     scene.add(light);
 }
@@ -115,10 +118,10 @@ function addCubes(dt) {
     });
     group = new THREE.Group();
     dt.forEach((d, i) => {
-        const value = barHeightScale(d.meanSale)
+        const value = barHeightScale(d.medianSale)
         var geometry = new THREE.BoxGeometry(boxSize, boxSize, value);
         var material = new THREE.MeshBasicMaterial({
-            color: colorScale(d.meanSale),
+            color: colorScale(d.medianSale),
             transparent: true
         });
 
@@ -152,6 +155,8 @@ const stepSel = container.selectAll('.step');
 const manhatton = convertUtmToImage(586738, 4515080)
 const brooklyn = convertUtmToImage(589395, 4503739)
 const bronx = convertUtmToImage(595692, 4522141)
+const staten = convertUtmToImage(571922, 4492426)
+const queens = convertUtmToImage(601767, 4509284)
 
 function updateCamera(targetData, cameraNewAngleVector, selBorough = '') {
     TWEEN.removeAll();
@@ -173,11 +178,11 @@ function updateCamera(targetData, cameraNewAngleVector, selBorough = '') {
             group.rotation.z = origin.r;
             if (targetData.index > 0) {
                 group.children.forEach(c => {
-                        if (c.name !== selBorough) {
-                            c.visible = false;
-                        } else {
-                            c.visible = true;
-                        } 
+                    if (c.name !== selBorough) {
+                        c.visible = false;
+                    } else {
+                        c.visible = true;
+                    }
                 })
             } else {
                 group.children.forEach(c => {
@@ -208,35 +213,58 @@ function updateChart(index) {
     const target2 = {
         index: 2,
         x: manhatton[0] - 10,
-        y: manhatton[1] - 2000,
-        z: posZ - 10,
-        value: target0.value + 8,
+        y: manhatton[1] - 1000,
+        z: posZ - 30,
+        value: target0.value + 3,
         r: target0.r + 1
     }
     const target3 = {
         index: 3,
         x: brooklyn[0],
-        y: brooklyn[1] - 2000,
+        y: brooklyn[1] - 1500,
         z: posZ - 10,
-        value: target0.value + 8,
+        value: target0.value + 5,
         r: target0.r
     }
     const target4 = {
         index: 4,
         x: bronx[0] - 100,
-        y: bronx[1] - 2000,
+        y: bronx[1] - 1300,
         z: posZ,
-        value: target0.value + 9,
+        value: target0.value + 6,
         r: target0.r
     }
+    const target5 = {
+        index: 5,
+        x: staten[0] - 80,
+        y: staten[1] - 1500,
+        z: posZ,
+        value: target0.value + 5,
+        r: target0.r
+    }
+    const target6 = {
+        index: 6,
+        x: queens[0] - 80,
+        y: queens[1] - 1500,
+        z: posZ,
+        value: target0.value + 5,
+        r: target0.r
+    }
+    
     if (index == 0 || index == 1) {
         updateCamera(target0, new THREE.Vector3(0, 0, 0))
     } else if (index == 2) {
         updateCamera(target2, new THREE.Vector3(-100, 100, 0), 'Manhattan')
     } else if (index == 3) {
         updateCamera(target3, new THREE.Vector3(40, 0, 0), 'Brooklyn')
-    } else {
-        updateCamera(target4, new THREE.Vector3(50, 100, 0), 'Bronx')
+    } else if (index == 4)  {
+        updateCamera(target4, new THREE.Vector3(80, 150, 0), 'Bronx')
+    } else if (index == 5){
+        updateCamera(target5, new THREE.Vector3(-200, -150, 0), 'Staten Island')
+    } else if (index == 6) {
+        updateCamera(target6, new THREE.Vector3(150, 30, 0), 'Queens')
+    } else  {
+        updateCamera(target0, new THREE.Vector3(0, 0, 0))
     }
 
     // requestAnimationFrame(render);
@@ -251,7 +279,7 @@ function init() {
 
     enterView({
         selector: stepSel.nodes(),
-        offset: 0.3,
+        offset: 0.08,
         enter: el => {
             const index = +d3.select(el).attr('data-index');
             updateChart(index);

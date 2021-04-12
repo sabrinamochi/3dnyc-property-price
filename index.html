@@ -17,6 +17,7 @@
 
         body {
             /* background-color: #000; */
+            font-family: 'Helvetica';
         }
 
         .sticky {
@@ -55,10 +56,10 @@
             margin: 0 auto;
             margin-bottom: 20rem;
             z-index: 1000;
-            
+            line-height: 150%;
         }
 
-        .step:last-of-type {
+        .step:last-child{
             margin-bottom: 0;
         }
 
@@ -67,6 +68,28 @@
             background-color: rgba(255, 255, 255, 1);
             border: 3px solid black;
             padding: 1rem;
+        }
+
+        .hide{
+            opacity: 0;
+        }
+
+        .step:last-of-type p {
+            background-color: none;
+            border: 0px ;
+            padding: 0;
+        }
+
+        .author {
+            /* position: absolute; */
+            text-align:end;
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .author p {
+            margin: 0 1% 0 50%;
+            line-height: 150%;
+            font-size: 14px;
         }
 
     </style>
@@ -95,15 +118,39 @@
                     NYC boroughs. </p>
             </div>
             <div class='step' data-index='3'>
-                <p>Brooklyn had the second highest median sale price in 2019, which was $707K.
+                <p>Brooklyn had the second highest median sale price, $707K, in 2019.
                 </p>
             </div>
             <div class='step' data-index='4'>
-                <p>Bronx is significantly lower in sale price than all boroughs in NYC. The median sale price in Bronx
+                <p>Bronx was significantly lower in sale price than all boroughs in NYC. The median sale price in Bronx
                     was only $475K, more than 70% lower than that in Manhattan.
                 </p>
             </div>
+            <div class='step' data-index='5'>
+                <p>Staten Island's median sale price in 2019 was $565K, 
+                    only $5K less than the median sale price of NYC as a whole. 
+                </p>
+            </div>
+            <div class='step' data-index='6'>
+                <p>Queens had a median sale price at $610K, higher than Both Bronx and Staten Island. 
+                    Especially Northwest Queens, an easier commute than Brooklyn for people working in Manhattan, saw prices spike.
+                </p>
+            </div>
+            <div class='step hide' data-index='7'>
+                <p>
+                    
+                </p>
+            </div>
+            <div class='author'>
+                <p>
+                    Project by Szu Yu Chen</br> 
+                    Base map source: Google Earth</br>
+                    Advisor: Dan Zedek </br>
+                </p>
+            </div>
+            
         </article>
+        
     </main>
     <!-- <canvas id='map'></canvas> -->
     <script>
