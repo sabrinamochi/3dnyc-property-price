@@ -112,10 +112,11 @@ function addLights() {
 
 
 function addCubes(dt) {
-    const cubeGroupGeo = new THREE.BoxGeometry(1, 1, 1);
-    const cubeGroupMaterial = new THREE.MeshBasicMaterial({
-        color: 0x00ff00
-    });
+    // const cubeGroupGeo = new THREE.BoxGeometry(1, 1, 1);
+    // const cubeGroupMaterial = new THREE.MeshBasicMaterial({
+    //     color: 0x00ff00
+    // });
+
     group = new THREE.Group();
     dt.forEach((d, i) => {
         const value = barHeightScale(d.medianSale)
@@ -124,7 +125,6 @@ function addCubes(dt) {
             color: colorScale(d.medianSale),
             transparent: true
         });
-
         const cube = new THREE.Mesh(geometry, material);
         cube.position.set(d.sceneX, d.sceneY, 0);
         cube.name = d['BOROUGH.NAME'];
@@ -141,8 +141,8 @@ function render(time) {
     // camera.position.x = (Math.cos(timer) * 1800);
     // camera.position.z = (Math.sin(timer) * 1800);
     // camera.lookAt(scene.position);
-    light.position.set(camera.position.x, camera.position.y, camera.position.z);
-    light.lookAt(scene.position);
+    // light.position.set(camera.position.x, camera.position.y, camera.position.z);
+    // light.lookAt(scene.position);
     renderer.render(scene, camera);
     TWEEN.update(time);
     requestAnimationFrame(render);
@@ -174,6 +174,9 @@ function updateCamera(targetData, cameraNewAngleVector, selBorough = '') {
             camera.position.set(origin.x, origin.y, origin.z);
             camera.zoom = origin.value;
             camera.updateProjectionMatrix();
+            light.position.set(origin.x, origin.y, origin.z);
+            light.updateMatrix();
+            light.updateMatrixWorld(); 
             nyc.rotation.z = origin.r;
             group.rotation.z = origin.r;
             if (targetData.index > 0) {
